@@ -1,6 +1,6 @@
 # wabridge
 
-Python client for [WABridge](https://github.com/marketcalls/wabridge) - send WhatsApp messages from Python via a simple REST API bridge.
+Python client for [WABridge](https://github.com/marketcalls/wabridge) - send WhatsApp messages from Python via a simple REST API bridge. Supports text, images, video, audio, documents — to individuals, groups, and channels.
 
 ## Prerequisites
 
@@ -59,7 +59,58 @@ wa.send([
 ])
 ```
 
-One function. Three ways to use it.
+## Media Messages
+
+```python
+wa = WABridge()
+
+# Image to self
+wa.send(image="https://example.com/photo.jpg", caption="Check this out")
+
+# Image to a contact
+wa.send("919876543210", image="https://example.com/photo.jpg", caption="Hello!")
+
+# Video
+wa.send("919876543210", video="https://example.com/video.mp4", caption="Watch this")
+
+# Voice note
+wa.send("919876543210", audio="https://example.com/voice.ogg")
+
+# Audio file (not voice note)
+wa.send("919876543210", audio="https://example.com/song.mp3", ptt=False)
+
+# Document
+wa.send("919876543210", document="https://example.com/report.pdf", mimetype="application/pdf", filename="report.pdf")
+```
+
+## Groups
+
+```python
+wa = WABridge()
+
+# List all groups
+groups = wa.groups()
+for g in groups:
+    print(f"{g['subject']} - {g['id']}")
+
+# Send text to group
+wa.send_group("120363012345@g.us", "Hello group!")
+
+# Send image to group
+wa.send_group("120363012345@g.us", image="https://example.com/photo.jpg", caption="Check this")
+```
+
+## Channels
+
+```python
+wa = WABridge()
+
+# Send text to channel
+wa.send_channel("120363098765@newsletter", "Channel update!")
+
+# Send image to channel
+wa.send_channel("120363098765@newsletter", image="https://example.com/photo.jpg")
+```
 
 ## Configuration
 
@@ -87,10 +138,9 @@ async def main():
     async with AsyncWABridge() as wa:
         await wa.send("Hello!")
         await wa.send("919876543210", "Hello!")
-        await wa.send([
-            ("919876543210", "Alert 1"),
-            ("919876543211", "Alert 2"),
-        ])
+        await wa.send("919876543210", image="https://example.com/photo.jpg")
+        await wa.send_group("120363012345@g.us", "Hello group!")
+        await wa.send_channel("120363098765@newsletter", "Update!")
 
 asyncio.run(main())
 ```
@@ -113,11 +163,43 @@ async with AsyncWABridge() as wa:
 
 #### `wa.send(...)`
 
-| Usage | Description | Returns |
-|-------|-------------|---------|
-| `wa.send("Hello!")` | Send to yourself | `{"success": True, "to": "self"}` |
-| `wa.send("919876543210", "Hello!")` | Send to a phone number | `{"success": True, "to": "919876543210"}` |
-| `wa.send([("91...", "msg"), ...])` | Send to many in parallel | `[{"success": True, "to": "91..."}, ...]` |
+| Usage | Description |
+|-------|-------------|
+| `wa.send("Hello!")` | Text to self |
+| `wa.send("919876543210", "Hello!")` | Text to a number |
+| `wa.send([("91...", "msg"), ...])` | Text to many in parallel |
+| `wa.send(image="https://...")` | Image to self |
+| `wa.send("919876543210", image="https://...", caption="Hi")` | Image to a number |
+| `wa.send("919876543210", video="https://...")` | Video to a number |
+| `wa.send("919876543210", audio="https://...")` | Voice note to a number |
+| `wa.send("919876543210", document="https://...", mimetype="application/pdf")` | Document to a number |
+
+#### `wa.send_group(group_id, ...)`
+
+| Usage | Description |
+|-------|-------------|
+| `wa.send_group("id@g.us", "Hello!")` | Text to group |
+| `wa.send_group("id@g.us", image="https://...")` | Image to group |
+
+#### `wa.send_channel(channel_id, ...)`
+
+| Usage | Description |
+|-------|-------------|
+| `wa.send_channel("id@newsletter", "Update!")` | Text to channel |
+| `wa.send_channel("id@newsletter", image="https://...")` | Image to channel |
+
+#### Media Keyword Arguments
+
+| Kwarg | Type | Description |
+|-------|------|-------------|
+| `image` | str (URL) | Image URL |
+| `video` | str (URL) | Video URL |
+| `audio` | str (URL) | Audio URL |
+| `document` | str (URL) | Document URL |
+| `caption` | str | Caption for image/video/document |
+| `mimetype` | str | MIME type (required for document) |
+| `filename` | str | File name for document |
+| `ptt` | bool | True for voice note (default), False for audio file |
 
 Phone numbers must include the country code (e.g. `91` for India, `1` for US) followed by the number — digits only, no `+` or spaces.
 
@@ -127,6 +209,7 @@ Phone numbers must include the country code (e.g. `91` for India, `1` for US) fo
 |--------|-------------|
 | `wa.status()` | Returns `{"status": "open", "user": "91...@s.whatsapp.net"}` |
 | `wa.is_connected()` | Returns `True` if WhatsApp is connected |
+| `wa.groups()` | Returns list of groups with `id`, `subject`, `size`, `desc` |
 | `wa.close()` | Close the HTTP client |
 
 ### `AsyncWABridge(host="localhost", port=3000, timeout=30.0)`
@@ -162,6 +245,18 @@ wa = WABridge()
 wa.send("BUY NIFTY 24000 CE @ 150")
 ```
 
+**Send chart image:**
+```python
+wa = WABridge()
+wa.send("919876543210", image="https://charts.example.com/nifty.png", caption="NIFTY Chart")
+```
+
+**Group notification:**
+```python
+wa = WABridge()
+wa.send_group("120363012345@g.us", "Market closed. P&L: +5000")
+```
+
 **Server monitoring:**
 ```python
 wa = WABridge()
@@ -174,12 +269,6 @@ if cpu_usage > 90:
 wa = WABridge()
 numbers = ["919876543210", "919876543211", "919876543212"]
 wa.send([(n, "Server maintenance at 10 PM") for n in numbers])
-```
-
-**Cron job notifications:**
-```python
-wa = WABridge()
-wa.send("Backup completed successfully")
 ```
 
 ## How It Works
