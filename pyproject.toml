@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wabridge"
+version = "0.1.0"
+description = "Python client for WABridge - WhatsApp HTTP API Bridge"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [{ name = "WABridge" }]
+keywords = ["whatsapp", "wabridge", "messaging", "alerts"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications :: Chat",
+]
+dependencies = ["httpx>=0.24.0"]
+
+[project.urls]
+Homepage = "https://github.com/marketcalls/wabridge"
+Repository = "https://github.com/marketcalls/wabridge"
