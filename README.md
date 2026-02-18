@@ -4,24 +4,32 @@ Python client for [WABridge](https://github.com/marketcalls/wabridge) - send Wha
 
 ## Prerequisites
 
-**1. Install and link WhatsApp (one-time setup):**
+**Node.js** (>= 20.0.0) must be installed on your system. Download it from [nodejs.org](https://nodejs.org/).
+
+**1. Install WABridge globally:**
 
 ```bash
-npx wabridge
+npm install -g wabridge
+```
+
+**2. Link WhatsApp (one-time setup):**
+
+```bash
+wabridge
 ```
 
 Scan the QR code with WhatsApp (Settings > Linked Devices > Link a Device). Auth is saved to `~/.wabridge/` — you only need to link once.
 
-**2. Start the API server:**
+**3. Start the API server:**
 
 ```bash
-npx wabridge start
+wabridge start
 ```
 
 Or on a custom port:
 
 ```bash
-npx wabridge start 8080
+wabridge start 8080
 ```
 
 ## Install
@@ -141,7 +149,7 @@ wa = WABridge()
 try:
     wa.send("919876543210", "Hello!")
 except ConnectionError:
-    print("WhatsApp is not connected. Run: npx wabridge start")
+    print("WhatsApp is not connected. Run: wabridge start")
 except ValidationError as e:
     print(f"Bad request: {e.message}")
 ```
@@ -184,9 +192,9 @@ Python App  -->  wabridge (Python)  -->  WABridge Server (Node.js)  -->  WhatsAp
 
 ## Requirements
 
+- [Node.js](https://nodejs.org/) >= 20.0.0 (required for the WABridge server)
+- WABridge installed globally (`npm install -g wabridge`) and running (`wabridge start`)
 - Python >= 3.8
-- WABridge server running (`npx wabridge start`)
-- Node.js >= 20.0.0 (for the WABridge server)
 
 ## License
 
