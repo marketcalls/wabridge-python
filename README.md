@@ -64,11 +64,14 @@ wa.send([
 ```python
 wa = WABridge()
 
+# Image from URL
+wa.send("919876543210", image="https://example.com/photo.jpg", caption="Hello!")
+
+# Image from local file path
+wa.send("919876543210", image="/path/to/photo.jpg", caption="Local file")
+
 # Image to self
 wa.send(image="https://example.com/photo.jpg", caption="Check this out")
-
-# Image to a contact
-wa.send("919876543210", image="https://example.com/photo.jpg", caption="Hello!")
 
 # Video
 wa.send("919876543210", video="https://example.com/video.mp4", caption="Watch this")
@@ -82,6 +85,8 @@ wa.send("919876543210", audio="https://example.com/song.mp3", ptt=False)
 # Document
 wa.send("919876543210", document="https://example.com/report.pdf", mimetype="application/pdf", filename="report.pdf")
 ```
+
+Media fields accept both remote URLs (`https://...`) and local file paths (`/path/to/file`) on the machine running the WABridge server.
 
 ## Groups
 
